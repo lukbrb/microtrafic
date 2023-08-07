@@ -100,7 +100,13 @@ if __name__ == '__main__':
         # Renvoie une liste des graphiques qui ont été mis à jour
         return points
 
+    # Durée totale de la simulation en secondes
+    total_duration = 3
+    # Taux de rafraîchissement (images par seconde)
+    fps = 30
+    total_frames = int(total_duration * fps)
     # Créer l'animation en appelant la fonction update à chaque image (frame)
-    ani = FuncAnimation(fig,update, frames=range(1000), interval=200, blit=True)
+    ani = FuncAnimation(fig,update, frames=range(total_frames), interval=1000/fps, blit=True)
     plt.legend()
-    plt.show()
+    # plt.show()
+    ani.save('trafic.gif')
