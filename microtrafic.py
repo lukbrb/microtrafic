@@ -56,7 +56,9 @@ class Voiture:
         
         # return !((other.y - self.y) <= distance_secur)
 
-
+    def depasse(self):
+        pass
+    
 if __name__ == '__main__':
 
     voitures = [Voiture(0, 3, v=5, nom='Dacia'), Voiture(0, 30, v=3, nom='Polo'), Voiture(0, 50, v=2, nom='4L')]
