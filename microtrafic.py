@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -6,20 +7,37 @@ dt = 0.1
 class Route:
     def __init__(self, voitures, nvoies, distance) -> None:
         self.voitures = voitures
-        self.nvoies = nvoies
+        self.nvoies = nvoies - 1
         self.distance = distance
+        self.nvoitures = len(self.voitures)
 
     def evolve(self):
-        for voit in self.voitures:
+        for voit in self.voitures:  #  for i, j in itertools.combinations(range(self.N_ATOMS), 2):
             for other in self.voitures:
                 if voit != other:
+        # for voit, other in itertools.combinations(self.voitures, 2):
                     if voit.check_distance_securite(other):
                         voit.avance()
+                    elif voit.can_depasse(other, -1, -self.nvoies):
+                        voit.change_voie(-1, -self.nvoies)
                     else:
-                        # print(f"{voit.nom} (x={voit.y}) trop proche de {other.nom} (x={other.y})")
-                        # print(f"{voit.nom} passe de v={voit.v} à {other.v}...")
-                        # voit.v = other.v
-                        voit.change_voie(-1)
+                        voit.x = voit.x  # on attends
+                                            
+                    if voit.x < 0 and voit.can_depasse(other, 1, -self.nvoies):
+                        voit.change_voie(1, -self.nvoies)
+
+
+            voit.y %= self.distance
+
+""""
+Conditions pour avancer:
+- Distance de sécurité avant suffisante
+
+Conditions pour dépasser:
+- Distance de sécurité avant trop faible
+- Distanec de sécurité arrière 
+
+"""
 
 class Voiture:
     def __init__(self, x, y, v, nom, a=0) -> None:
@@ -37,8 +55,12 @@ class Voiture:
         dv += (self.a * dt) * signe # 1 accélère, -1 décélère
         self.v += dv
 
-    def change_voie(self, dx):
-        self.x += dx
+    def change_voie(self, dx, nvoie):
+        dy = 0  # Un p'tit coup d'accélérateur
+        if self.x >= nvoie:
+            self.x += dx
+            self.y += dy
+    
     
     def check_distance_securite(self, other):
         "True si distance respectée, False sinon"
@@ -56,13 +78,20 @@ class Voiture:
         
         # return !((other.y - self.y) <= distance_secur)
 
-    def depasse(self):
-        pass
-    
+    def can_depasse(self, other, dx, nvoie):
+        can_overtake = False
+        x_temp = self.x
+        self.x += dx
+        if self.check_distance_securite(other) and self.x >= nvoie:
+            can_overtake = True
+        self.x = x_temp
+        return can_overtake
+
+
 if __name__ == '__main__':
 
-    voitures = [Voiture(0, 3, v=5, nom='Dacia'), Voiture(0, 30, v=3, nom='Polo'), Voiture(0, 50, v=2, nom='4L')]
-    route = Route(voitures, nvoies=1, distance=100)
+    voitures = [Voiture(0, 3, v=3, nom='Dacia'), Voiture(0, 30, v=2, nom='Polo'), Voiture(0, 50, v=1.5, nom='4L')]
+    route = Route(voitures, nvoies=3, distance=100)
 
     # roule = True
     # while roule:
@@ -75,7 +104,7 @@ if __name__ == '__main__':
     # for voit in voitures:
     #     print(voit.nom, voit.x, voit.v)
 
-
+    road_width = 0.5
     # Création de la figure et de l'axe
     fig, ax = plt.subplots()
     ax.set_xlim(-5, 5)
@@ -85,12 +114,12 @@ if __name__ == '__main__':
     point1, = ax.plot(voitures[0].x, voitures[0].y, 'r.', markersize=10, label=voitures[0].nom)
     point2, = ax.plot(voitures[1].x, voitures[1].y, 'b.', markersize=10, label=voitures[1].nom)
     point3, = ax.plot(voitures[2].x, voitures[2].y, 'g.', markersize=10, label=voitures[2].nom)
-    ligne1 = ax.vlines(-0.3, 0, route.distance, color='k')
-    ligne2 = ax.vlines(0.3, 0, route.distance, color='k')
-    ligne3 = ax.vlines(0.9, 0, route.distance, color='k')
-    ligne4 = ax.vlines(-0.9, 0, route.distance, color='k')
+    ligne1 = ax.vlines(road_width, 0, route.distance, color='k')
+    ligne2 = ax.vlines(-road_width, 0, route.distance, color='k')
+    ligne3 = ax.vlines(-3 * road_width, 0, route.distance, color='k')
+    ligne4 = ax.vlines(-5 * road_width , 0, route.distance, color='k')
     points = [point1, point2, point3]
-
+    
     def update(frame):
         # Mettre à jour les coordonnées des points (simulation du mouvement)
         route.evolve()
@@ -98,7 +127,9 @@ if __name__ == '__main__':
         for i in range(3):
         # Mettre à jour les données des points dans les graphiques
             points[i].set_data(voitures[i].x, voitures[i].y % route.distance)
-
+            points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
+            
+            # print(f'{voitures[i].nom} , y = {voitures[i].x: .2f})')
         # Renvoie une liste des graphiques qui ont été mis à jour
         return points
 
@@ -109,6 +140,6 @@ if __name__ == '__main__':
     total_frames = int(total_duration * fps)
     # Créer l'animation en appelant la fonction update à chaque image (frame)
     ani = FuncAnimation(fig,update, frames=range(total_frames), interval=1000/fps, blit=True)
-    plt.legend()
-    # plt.show()
-    ani.save('trafic.gif')
+    ax.legend()
+    plt.show()
+    # ani.save('trafic.gif')
