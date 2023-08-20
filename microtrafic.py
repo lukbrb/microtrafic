@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 dt = 0.1
+NVOIES = 3
 class Route:
     def __init__(self, voitures, nvoies, distance) -> None:
         self.voitures = voitures
@@ -91,7 +92,7 @@ class Voiture:
 if __name__ == '__main__':
 
     voitures = [Voiture(0, 3, v=3, nom='Dacia'), Voiture(0, 30, v=2, nom='Polo'), Voiture(0, 50, v=1.5, nom='4L')]
-    route = Route(voitures, nvoies=3, distance=100)
+    route = Route(voitures, nvoies=NVOIES, distance=100)
 
     # roule = True
     # while roule:
@@ -109,16 +110,16 @@ if __name__ == '__main__':
     fig, ax = plt.subplots()
     ax.set_xlim(-5, 5)
     ax.set_ylim(0, route.distance)
-
+    couleurs = 'rbg'
     # Initialisation des points
-    point1, = ax.plot(voitures[0].x, voitures[0].y, 'r.', markersize=10, label=voitures[0].nom)
-    point2, = ax.plot(voitures[1].x, voitures[1].y, 'b.', markersize=10, label=voitures[1].nom)
-    point3, = ax.plot(voitures[2].x, voitures[2].y, 'g.', markersize=10, label=voitures[2].nom)
+    points = [(ax.plot(voiture.x, voiture.y, couleurs[i] + '.', markersize=10, label=voiture.nom))[0] for i, voiture in enumerate(voitures)]
+    # Création de la route 
+    # TODO: Automatiser cette création en fonction de NVOIES
     ligne1 = ax.vlines(road_width, 0, route.distance, color='k')
     ligne2 = ax.vlines(-road_width, 0, route.distance, color='k')
     ligne3 = ax.vlines(-3 * road_width, 0, route.distance, color='k')
     ligne4 = ax.vlines(-5 * road_width , 0, route.distance, color='k')
-    points = [point1, point2, point3]
+    # points = [point1, point2, point3]
     
     def update(frame):
         # Mettre à jour les coordonnées des points (simulation du mouvement)
