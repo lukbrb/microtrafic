@@ -2,4 +2,4 @@
 
 Essai de simulation de trafic à l'échelle macro
 
-![](trafic.gif)
+![Capture simulation trafic](trafic.png)
