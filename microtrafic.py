@@ -6,7 +6,20 @@ from typing import List
 dt = 0.1
 NVOIES = 3
 VMAX = 5
-sens_changement = {'gauche': 1, 'droite': -1, 'devant': 1, 'derriere': -1}
+POSSIBILITES = {
+    'Avance': 1,
+    'Rabattement': 2,
+    'Dépassement': 3,
+    'Attente': 4
+
+}
+
+ACTIONS = {
+     2 : 'Avance',
+     3 : 'Rabattement',
+     4 : 'Dépassement',
+}
+sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
 
 """"
 Conditions pour avancer:
@@ -14,7 +27,7 @@ Conditions pour avancer:
 
 Conditions pour dépasser:
 - Distance de sécurité avant trop faible
-- Distance de sécurité arrière 
+- Distance de sécurité arrière suffisante
 
 Note: Bogue lorsqu'une voiture revient à 0, car dans ce cas les distances de sécurité sont faussement respectées.
 """
@@ -102,6 +115,8 @@ class Voiture:
     def rabattement(self):
         self.change_voie(sens='droite', nvoie=-NVOIES)
 
+
+
 class Route:
     def __init__(self, voitures: List[Voiture], nvoies: int, distance: float) -> None:
         self.voitures = voitures
@@ -114,21 +129,40 @@ class Route:
             pass
 
     def evolve(self):
-
-        for voit, other in itertools.combinations(self.voitures, 2):
-            if voit.check_distance_securite(other, sens='devant'):
-                voit.avance()
-                action = 'Avance'
-            elif voit.can_depasse(other, sens='droite', nvoie=-self.nvoies):
-                voit.rabattement()
-                action = 'Rabattement'
-            else:
-                voit.x = voit.x  # on attends
-                action = 'Attente'
-                                    
-            if voit.x < 0 and voit.can_depasse(other, sens='gauche', nvoie=-self.nvoies):
-                voit.depassement()
-                action = 'Dépassement'
-
+        # for voit, other in itertools.permutations(self.voitures, 2):  # À optimiser avec combinations
+        for voit in self.voitures:
+            possibilities = []
+            for other in self.voitures:
+                if voit != other:
+                    if voit.x < 0 and voit.can_depasse(other, sens='droite', nvoie=-self.nvoies): possibility = 'Rabattement'
+                    elif voit.check_distance_securite(other, sens='devant'): possibility = 'Avance'
+                    elif voit.can_depasse(other, sens='gauche', nvoie=-self.nvoies): possibility = 'Dépassement'
+                    else: possibility = 'Attente'
+                    possibilities.append(POSSIBILITES[possibility])
+            print(possibilities)
+            print(sum(possibilities))    
+            action = ACTIONS.get(sum(possibilities), 'Attente')
+            if action == 'Avance': voit.avance()
+            elif action == 'Rabattement': voit.rabattement()
+            elif action == 'Dépassement': voit.depassement()
+            elif action == 'Attente': voit.y = voit.y
+            else: raise NotImplementedError('Ce cas de figure ne devrait pas apparaître...')
             logging.info(f"{voit.nom.upper()} - Position ({voit.x:.2f}, {voit.y:.2f}) - Action: {action}")
             voit.y %= self.distance
+
+"""
+Possibilité pour 1 v 1:
+1 - Avance
+2 - Rabattement
+3 - Dépassement
+
+x et x -> x
+Combinaisons :
+ 1 et 2 = 3 : Rabattement
+ 1 et 3 = 4 : Dépassement
+ ----
+ 2 et 3 = 5 : Rabattement
+ !2 et 3: Reste
+ ! 2 et !3: Reste
+ et toutes autres combinaisons, reste 
+"""
