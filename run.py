@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from microtrafic import Voiture, Route, NVOIES, VMAX
 
+
 road_width = 0.5
 
 
-voitures = [Voiture(0, 3, v=VMAX, nom='Dacia'), Voiture(0, 3, v=0.9*VMAX, nom='Polo'), Voiture(0, 50, v=0.7*VMAX, nom='4L')]
+voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), Voiture(0, 15, v=0.8*VMAX, nom='Polo '), Voiture(0, 40, v=0.5*VMAX, nom='4L   ')]
 route = Route(voitures, nvoies=NVOIES, distance=100)
 
 # Création de la figure et de l'axe
