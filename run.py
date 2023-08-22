@@ -6,10 +6,15 @@ from microtrafic import Voiture, Route, NVOIES, VMAX
 road_width = 0.5
 
 
-voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), Voiture(0, 15, v=0.8*VMAX, nom='Polo '), Voiture(0, 40, v=0.5*VMAX, nom='4L   ')]
+voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), 
+            Voiture(0, 15, v=0.8*VMAX, nom='Polo '), 
+            Voiture(0, 70, v=0.3*VMAX, nom='Camion 2'), 
+            Voiture(-1, 65, v=0.35*VMAX, nom='Camion 1'), 
+            Voiture(0, 40, v=0.6*VMAX, nom='4L   '),
+            Voiture(-1, 60, v=0.9*VMAX, nom='Cabrio')
+            ]
 route = Route(voitures, nvoies=NVOIES, distance=100)
 
-# Création de la figure et de l'axe
 fig, ax = plt.subplots()
 ax.set_xlim(-5, 5)
 ax.set_ylim(0, route.distance)
@@ -18,9 +23,9 @@ ax.set_ylim(0, route.distance)
 #ax.axis('off')
 
 
-couleurs = 'rbg'
+couleurs = 'rbgkyw'
 # Initialisation des points
-points = [(ax.plot(voiture.x, voiture.y, couleurs[i] + '.', markersize=10, label=voiture.nom))[0] for i, voiture in enumerate(voitures)]
+points = [(ax.plot(voiture.x, voiture.y, couleurs[i % len(couleurs)] + '.', markersize=10, label=voiture.nom))[0] for i, voiture in enumerate(voitures)]
 # Création de la route 
 
 ax.set_facecolor('gray')
@@ -34,15 +39,13 @@ ligne4 = ax.vlines(-5 * road_width , 0, route.distance, color='w', linestyles='-
 
 def update(frame):
     # Mettre à jour les coordonnées des points (simulation du mouvement)
-    route.evolve()
+    route.step()
 
     for i in range(len(points)):
     # Mettre à jour les données des points dans les graphiques
         points[i].set_data(voitures[i].x, voitures[i].y % route.distance)
         points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
-        
-        # print(f'{voitures[i].nom} , y = {voitures[i].x: .2f})')
-    # Renvoie une liste des graphiques qui ont été mis à jour
+
     return points
 
 # Durée totale de la simulation en secondes
