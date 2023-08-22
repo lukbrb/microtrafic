@@ -6,19 +6,6 @@ from typing import List
 dt = 0.1
 NVOIES = 3
 VMAX = 5
-POSSIBILITES = {
-    'Avance': 1,
-    'Rabattement': 2,
-    'Dépassement': 3,
-    'Attente': 4
-
-}
-
-ACTIONS = {
-     2 : 'Avance',
-     3 : 'Rabattement',
-     4 : 'Dépassement',
-}
 sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
 
 """"
@@ -34,14 +21,12 @@ Note: Bogue lorsqu'une voiture revient à 0, car dans ce cas les distances de s�
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-# Créer un gestionnaire de fichier pour la journalisation
-log_file = "run.log"  # Nom du fichier de journalisation
+log_file = "run.log"  
 file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.INFO)  # Niveau de journalisation pour le gestionnaire de fichier
+file_handler.setLevel(logging.INFO)
 file_formatter = logging.Formatter('%(message)s')
 file_handler.setFormatter(file_formatter)
 
-# Ajouter le gestionnaire de fichier à la configuration de journalisation
 logging.getLogger('').addHandler(file_handler)
 
 
@@ -52,7 +37,7 @@ class Voiture:
         self.v = v
         self.a = a
         self.nom = nom
-    
+
     def avance(self) -> None:
         dy = 0.5 * self.a * dt**2 + self.v * dt
         self.y += dy
@@ -60,61 +45,22 @@ class Voiture:
     def accelere(self, signe=1) -> None:
         dv += (self.a * dt) * signe # 1 accélère, -1 décélère
         self.v += dv
-
-    def check_distance_securite(self, other, sens: str, temps_secur: float = 2.) -> bool:
-        "True si distance respectée, False sinon"
-        
-        distance_secur = self.v * temps_secur
-        dy = sens_changement[sens]
-        dist_voit = (other.y - self.y) * dy
-        
-        # Voiture derrière, devant : d < 0, d > 0
-        # Direction derrière, devant: dy < 0, dy > 0
-        # d < 0 et dy < 0 --> dist_voit > 0 ---> SI  dist_voit > distance_secur : OK
-        # d < 0 et dy > 0 --> dist_voit < 0 ---> OK
-        # d > 0 et dy < 0 --> dist_voit < 0 ---> OK
-        # d > 0 et dy > 0 --> dist_voit > 0 ---> SI  dist_voit > distance_secur : OK
-
-        if other.x != self.x:
-            return True
-
-        if dist_voit < 0: 
-            return True
-
-        if dist_voit > distance_secur:
-            return True
-        else:
-            return False
-        
-        # return !((other.y - self.y) <= distance_secur)
-
-    def can_depasse(self, other, sens: str, nvoie: int) -> bool:
-        dx = sens_changement[sens]
-
-        can_overtake = False
-        x_temp = self.x
-        self.x += dx
-        ok_devant = self.check_distance_securite(other, sens='devant', temps_secur=4)
-        ok_derriere = self.check_distance_securite(other, sens='derriere', temps_secur=4)
-        voie_existe = self.x >= nvoie
-        if  ok_devant and ok_derriere and voie_existe:
-            can_overtake = True
-        self.x = x_temp
-        return can_overtake
     
-    def change_voie(self, sens:str, nvoie:int):
+    def _change_voie(self, sens:str):
         dx = sens_changement[sens]
-        dy = 0  # Un p'tit coup d'accélérateur
-        if self.x >= nvoie:
+        if -NVOIES <= (self.x + dx) <= 0:
             self.x += dx
-            self.y += dy
-    
+
     def depassement(self):
-         self.change_voie(sens='gauche', nvoie=-NVOIES)
+         self._change_voie(sens='gauche')
+         self.avance()
     
     def rabattement(self):
-        self.change_voie(sens='droite', nvoie=-NVOIES)
+        self._change_voie(sens='droite')
+        self.avance()
 
+    def attente(self) -> None:
+        self.y = self.y
 
 
 class Route:
@@ -124,45 +70,29 @@ class Route:
         self.distance = distance
         self.nvoitures = len(self.voitures)
 
-    def compute_distance(self) -> List[List]:
-        for voit, other in itertools.combinations(self.voitures, 2):
-            pass
+    def distance_securite(self, x: float, y: float, voiture: Voiture, temps_secur: float = 1.) -> bool:
+        distance_secur = voiture.v * temps_secur
+        for other in self.voitures:
+            if x == other.x and voiture != other:  # Véhicules sur la même ligne, et pas lui-même
+                if abs(y - other.y) < distance_secur:
+                    return False
+        return True
+    
+    def step(self) -> None:
+        for voiture in self.voitures:
+            if self.distance_securite(voiture.x + 1, voiture.y + voiture.v * dt, voiture) and voiture.x < 0:
+                voiture.rabattement()
+                action = 'Rabattement'
+            elif self.distance_securite(voiture.x, voiture.y + voiture.v * dt, voiture):
+                voiture.avance()
+                action = 'Avance'
+            elif self.distance_securite(voiture.x - 1, voiture.y + voiture.v * dt, voiture) and voiture.x > -NVOIES:
+                voiture.depassement()
+                action = 'Dépassement'
+            else:
+                voiture.attente()
+                action = 'Attente'
 
-    def evolve(self):
-        # for voit, other in itertools.permutations(self.voitures, 2):  # À optimiser avec combinations
-        for voit in self.voitures:
-            possibilities = []
-            for other in self.voitures:
-                if voit != other:
-                    if voit.x < 0 and voit.can_depasse(other, sens='droite', nvoie=-self.nvoies): possibility = 'Rabattement'
-                    elif voit.check_distance_securite(other, sens='devant'): possibility = 'Avance'
-                    elif voit.can_depasse(other, sens='gauche', nvoie=-self.nvoies): possibility = 'Dépassement'
-                    else: possibility = 'Attente'
-                    possibilities.append(POSSIBILITES[possibility])
-            print(possibilities)
-            print(sum(possibilities))    
-            action = ACTIONS.get(sum(possibilities), 'Attente')
-            if action == 'Avance': voit.avance()
-            elif action == 'Rabattement': voit.rabattement()
-            elif action == 'Dépassement': voit.depassement()
-            elif action == 'Attente': voit.y = voit.y
-            else: raise NotImplementedError('Ce cas de figure ne devrait pas apparaître...')
-            logging.info(f"{voit.nom.upper()} - Position ({voit.x:.2f}, {voit.y:.2f}) - Action: {action}")
-            voit.y %= self.distance
-
-"""
-Possibilité pour 1 v 1:
-1 - Avance
-2 - Rabattement
-3 - Dépassement
-
-x et x -> x
-Combinaisons :
- 1 et 2 = 3 : Rabattement
- 1 et 3 = 4 : Dépassement
- ----
- 2 et 3 = 5 : Rabattement
- !2 et 3: Reste
- ! 2 et !3: Reste
- et toutes autres combinaisons, reste 
-"""
+            voiture.y %= self.distance
+            logging.info(f"{voiture.nom.upper()} - Position ({voiture.x:.2f}, {voiture.y:.2f}) - Action: {action}")
+            
