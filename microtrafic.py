@@ -5,7 +5,6 @@ from typing import List
 
 dt = 0.1
 NVOIES = 3
-VMAX = 5
 sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
 
 """"
