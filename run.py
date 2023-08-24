@@ -1,3 +1,4 @@
+import random
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from microtrafic import Voiture, Route, NVOIES, VMAX
@@ -5,14 +6,24 @@ from microtrafic import Voiture, Route, NVOIES, VMAX
 
 road_width = 0.5
 
+n_voitures = 50
+bornes_x = (-NVOIES + 1, 0)
+bornes_y = (0, 99)
+bornes_v = (0.5, 1)
 
-voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), 
-            Voiture(0, 15, v=0.8*VMAX, nom='Polo '), 
-            Voiture(0, 70, v=0.3*VMAX, nom='Camion 2'), 
-            Voiture(-1, 65, v=0.35*VMAX, nom='Camion 1'), 
-            Voiture(0, 40, v=0.6*VMAX, nom='4L   '),
-            Voiture(-1, 60, v=0.9*VMAX, nom='Cabrio')
-            ]
+voitures = []
+for voiture in range(n_voitures):
+    voitures.append(Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX))
+print(voitures)
+
+
+# voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), 
+#             Voiture(0, 15, v=0.8*VMAX, nom='Polo '), 
+#             Voiture(0, 70, v=0.3*VMAX, nom='Camion 2'), 
+#             Voiture(-1, 65, v=0.35*VMAX, nom='Camion 1'), 
+#             Voiture(0, 40, v=0.6*VMAX, nom='4L   '),
+#             Voiture(-1, 60, v=0.9*VMAX, nom='Cabrio')
+#             ]
 route = Route(voitures, nvoies=NVOIES, distance=100)
 
 fig, ax = plt.subplots()
@@ -55,7 +66,7 @@ fps = 30
 total_frames = int(total_duration * fps)
 # Créer l'animation en appelant la fonction update à chaque image (frame)
 ani = FuncAnimation(fig,update, frames=range(total_frames), interval=1000/fps, blit=True)
-ax.legend()
+#ax.legend()
 
 plt.tight_layout()  # Ajuster la disposition des éléments de la figure
 plt.show()
