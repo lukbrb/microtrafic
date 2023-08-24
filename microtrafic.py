@@ -31,13 +31,18 @@ logging.getLogger('').addHandler(file_handler)
 
 
 class Voiture:
-    def __init__(self, x, y, v, nom, a=0) -> None:
+    def __init__(self, x, y, v, nom="baniol", a=0) -> None:
         self.x = x
         self.y = y
         self.v = v
         self.a = a
         self.nom = nom
 
+    def __str__(self) -> str:
+        return f"{self.nom.title()}(x={self.x:.2f}, y={self.y:.2f}, v={self.v:.2f})"
+    
+    def __repr__(self) -> str:
+        return f"{self.nom.title()}(x={self.x:.2f}, y={self.y:.2f}, v={self.v:.2f})"
     def avance(self) -> None:
         dy = 0.5 * self.a * dt**2 + self.v * dt
         self.y += dy
@@ -80,13 +85,13 @@ class Route:
     
     def step(self) -> None:
         for voiture in self.voitures:
-            if self.distance_securite(voiture.x + 1, voiture.y + voiture.v * dt, voiture) and voiture.x < 0:
+            if self.distance_securite(voiture.x + sens_changement['droite'], voiture.y + voiture.v * dt, voiture) and voiture.x < 0:
                 voiture.rabattement()
                 action = 'Rabattement'
             elif self.distance_securite(voiture.x, voiture.y + voiture.v * dt, voiture):
                 voiture.avance()
                 action = 'Avance'
-            elif self.distance_securite(voiture.x - 1, voiture.y + voiture.v * dt, voiture) and voiture.x > -NVOIES:
+            elif self.distance_securite(voiture.x + sens_changement['gauche'], voiture.y + voiture.v * dt, voiture) and (voiture.x - 1) > -NVOIES:
                 voiture.depassement()
                 action = 'Dépassement'
             else:
