@@ -1,19 +1,18 @@
 import random
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from microtrafic import Voiture, Route, NVOIES, VMAX
+from microtrafic import Voiture, Route, NVOIES
 
 
 road_width = 0.5
-
-n_voitures = 50
+VMAX = 5
+n_voitures = 10
 bornes_x = (-NVOIES + 1, 0)
 bornes_y = (0, 99)
 bornes_v = (0.5, 1)
 
-voitures = []
-for voiture in range(n_voitures):
-    voitures.append(Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX))
+voitures = [Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX) for _ in range(n_voitures)]
+
 print(voitures)
 
 
