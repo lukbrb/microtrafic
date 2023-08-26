@@ -4,6 +4,7 @@ from typing import List
 
 
 dt = 0.1
+TEMPS_SECUR = 1.
 NVOIES = 3
 sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
 
@@ -73,6 +74,7 @@ class Route:
         self.nvoies = nvoies - 1
         self.distance = distance
         self.nvoitures = len(self.voitures)
+        self.pas = 0
 
     def distance_securite(self, x: float, y: float, voiture: Voiture, temps_secur: float = 1.) -> bool:
         distance_secur = voiture.v * temps_secur
@@ -81,6 +83,15 @@ class Route:
                 if abs(y - other.y) < distance_secur:
                     return False
         return True
+    
+    # def distance_securite_avancer(self, x: float, y: float, voiture: Voiture, temps_secur: float = 1.) -> bool:
+    #     distance_secur = voiture.v * temps_secur
+    #     for other in self.voitures:
+    #         if x == other.x and voiture != other:  # Véhicules sur la même ligne, et pas lui-même
+    #             d = y - other.y
+    #             if d > 0 and abs(d) < distance_secur:  # on veut s'assurer que la voiture est devant
+    #                 return False
+    #     return True
     
     def step(self) -> None:
         for voiture in self.voitures:
@@ -98,5 +109,5 @@ class Route:
                 action = 'Attente'
 
             voiture.y %= self.distance
-            logging.info(f"{voiture.nom.upper()} - Position ({voiture.x:.2f}, {voiture.y:.2f}) - Action: {action}")
+            logging.info(f"Étape : {self.pas} - Position ({voiture.x:.2f}, {voiture.y:.2f}) - Action: {action}")
             

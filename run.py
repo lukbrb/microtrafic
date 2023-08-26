@@ -6,12 +6,12 @@ from microtrafic import Voiture, Route, NVOIES
 
 road_width = 0.5
 VMAX = 5
-n_voitures = 10
+NVOITURES = 40
 bornes_x = (-NVOIES + 1, 0)
 bornes_y = (0, 99)
-bornes_v = (0.5, 1)
+bornes_v = (0.7, 1)
 
-voitures = [Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX) for _ in range(n_voitures)]
+voitures = [Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX) for _ in range(NVOITURES)]
 
 print(voitures)
 
@@ -35,7 +35,8 @@ ax.set_ylim(0, route.distance)
 
 couleurs = 'rbgkyw'
 # Initialisation des points
-points = [(ax.plot(voiture.x, voiture.y, couleurs[i % len(couleurs)] + '.', markersize=10, label=voiture.nom))[0] for i, voiture in enumerate(voitures)]
+points = [(ax.plot(voiture.x, voiture.y, couleurs[i % len(couleurs)] + '.', markersize=10))[0] for i, voiture in enumerate(voitures)]
+etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
 # Création de la route 
 
 ax.set_facecolor('gray')
@@ -49,14 +50,15 @@ ligne4 = ax.vlines(-5 * road_width , 0, route.distance, color='w', linestyles='-
 
 def update(frame):
     # Mettre à jour les coordonnées des points (simulation du mouvement)
+    route.pas += 1
     route.step()
 
     for i in range(len(points)):
     # Mettre à jour les données des points dans les graphiques
         points[i].set_data(voitures[i].x, voitures[i].y % route.distance)
-        points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
-
-    return points
+        # points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
+    etape[0].set_label(f'Étape = {route.pas}')
+    return points + etape
 
 # Durée totale de la simulation en secondes
 total_duration = 3
@@ -65,7 +67,7 @@ fps = 30
 total_frames = int(total_duration * fps)
 # Créer l'animation en appelant la fonction update à chaque image (frame)
 ani = FuncAnimation(fig,update, frames=range(total_frames), interval=1000/fps, blit=True)
-#ax.legend()
+ax.legend()
 
 plt.tight_layout()  # Ajuster la disposition des éléments de la figure
 plt.show()
