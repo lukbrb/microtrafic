@@ -1,3 +1,3 @@
 clear
-rm run.log
-python3 run.py
+rm microtrafic/run.log
+python3 microtrafic/run.py
