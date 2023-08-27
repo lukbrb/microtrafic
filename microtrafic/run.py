@@ -13,8 +13,6 @@ bornes_v = (0.7, 1)
 
 voitures = [Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX) for _ in range(NVOITURES)]
 
-print(voitures)
-
 
 # voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), 
 #             Voiture(0, 15, v=0.8*VMAX, nom='Polo '), 
@@ -35,7 +33,7 @@ ax.set_ylim(0, route.distance)
 
 couleurs = 'rbgkyw'
 # Initialisation des points
-points = [(ax.plot(voiture.x, voiture.y, couleurs[i % len(couleurs)] + '.', markersize=10))[0] for i, voiture in enumerate(voitures)]
+points = [(ax.plot(voiture.x, voiture.y, color=voiture.couleur, marker='.', markersize=10))[0] for i, voiture in enumerate(voitures)]
 etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
 # Création de la route 
 
@@ -56,7 +54,7 @@ def update(frame):
     for i in range(len(points)):
     # Mettre à jour les données des points dans les graphiques
         points[i].set_data(voitures[i].x, voitures[i].y % route.distance)
-        # points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
+        points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
     etape[0].set_label(f'Étape = {route.pas}')
     return points + etape
 
