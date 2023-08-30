@@ -1,9 +1,11 @@
 import random
+from typing import List
 import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
 from matplotlib.animation import FuncAnimation
 from microtrafic import Voiture, Route, NVOIES
 
-
+# TODO: Mettre les paramètres généraux dans un fichier json ou autre
 road_width = 0.5
 VMAX = 5
 NVOITURES = 40
@@ -13,18 +15,10 @@ bornes_v = (0.7, 1)
 
 voitures = [Voiture(random.randint(*bornes_x), random.uniform(*bornes_y), random.uniform(*bornes_v) * VMAX) for _ in range(NVOITURES)]
 
-
-# voitures = [Voiture(0, 1, v=VMAX, nom='Dacia'), 
-#             Voiture(0, 15, v=0.8*VMAX, nom='Polo '), 
-#             Voiture(0, 70, v=0.3*VMAX, nom='Camion 2'), 
-#             Voiture(-1, 65, v=0.35*VMAX, nom='Camion 1'), 
-#             Voiture(0, 40, v=0.6*VMAX, nom='4L   '),
-#             Voiture(-1, 60, v=0.9*VMAX, nom='Cabrio')
-#             ]
 route = Route(voitures, nvoies=NVOIES, distance=100)
 
 fig, ax = plt.subplots()
-ax.set_xlim(-5, 5)
+ax.set_xlim(- NVOIES, 5)
 ax.set_ylim(0, route.distance)
 #ax.set_axis_off()
 
@@ -37,14 +31,31 @@ points = [(ax.plot(voiture.x, voiture.y, color=voiture.couleur, marker='.', mark
 etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
 # Création de la route 
 
+def genere_impaires(n: int) -> List[int]:
+    """ Pour 2 voies on veut [-1, -3] * road_width
+             3 -> [-1, -3, -5]
+             4 -> [-1, -3, -5, -7]
+             ... Les nombres impais <= 2n - 1
+    """
+    return list(range(n+n))[1::2]
+
+def genere_route(ax: plt.Axes, route: Route, nvoies: int, rwidth: float) -> List[LineCollection]:
+    multiplicateurs = genere_impaires(nvoies)
+    ligne_droite = [ax.vlines(rwidth, 0, route.distance, color='w', linestyles='-')]
+    interlignes = [ax.vlines(-i * road_width, 0, route.distance, color='w', linestyles='--') for i in multiplicateurs[:-1]]  # La dernière ligne doit être solide
+    ligne_gauche = [ax.vlines(-multiplicateurs[-1] * road_width, 0, route.distance, color='w', linestyles='-')]
+    return ligne_droite + interlignes + ligne_gauche
+
 ax.set_facecolor('gray')
 # TODO: Automatiser cette création en fonction de NVOIES
-ligne1 = ax.vlines(road_width, 0, route.distance, color='w', linestyles='-')
-ligne2 = ax.vlines(-road_width, 0, route.distance, color='w', linestyles='--')
+# ligne1 = ax.vlines(road_width, 0, route.distance, color='w', linestyles='-')
+# ligne2 = ax.vlines(-road_width, 0, route.distance, color='w', linestyles='--')
 
-ligne3 = ax.vlines(-3 * road_width, 0, route.distance, color='w', linestyles='--')
-ligne4 = ax.vlines(-5 * road_width , 0, route.distance, color='w', linestyles='-')
-# points = [point1, point2, point3]
+# ligne3 = ax.vlines(-3 * road_width, 0, route.distance, color='w', linestyles='--')
+# ligne4 = ax.vlines(-5 * road_width , 0, route.distance, color='w', linestyles='-')
+# points = [point1, point2, point3
+
+lignes = genere_route(ax=ax, route=route, nvoies=NVOIES, rwidth=road_width)
 
 def update(frame):
     # Mettre à jour les coordonnées des points (simulation du mouvement)
