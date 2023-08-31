@@ -1,9 +1,9 @@
 {"NVOIES": 5,
-    "road_width": 0.5,
+    "ROAD_WIDTH": 0.5,
     "VMAX": 5,
     "NVOITURES": 10,
     "bornes_y": [0, 99],
     "bornes_v": [0.7, 1],
-    "dt": 0.1,
+    "DT": 0.1,
     "TEMPS_SECUR": 1.0,
     "sens_changement": {"gauche": -1, "droite": 1, "devant": 1, "derriere": -1}}
