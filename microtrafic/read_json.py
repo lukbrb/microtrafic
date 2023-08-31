@@ -19,5 +19,3 @@ def read_params(file_name):
     with open(file_name, "r") as json_file:
         return Parameters(**json.load(json_file))
         
-
-print(read_params('microtrafic/parameters.json'))
