@@ -1,11 +1,7 @@
 import logging
-import random
-import string
 from typing import List
 
-from matplotlib.colors import CSS4_COLORS
-
-from read_json import read_params
+from utils import read_params, generate_random_color, generate_random_immatriculation
 
 params = read_params()
 # dt = 0.1
@@ -33,19 +29,6 @@ file_formatter = logging.Formatter('%(message)s')
 file_handler.setFormatter(file_formatter)
 
 logging.getLogger('').addHandler(file_handler)
-
-
-def generate_random_immatriculation() -> str:
-    letters1 = random.choice(string.ascii_uppercase) + random.choice(string.ascii_uppercase)
-    numbers = str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9))
-    letters2 = random.choice(string.ascii_uppercase) + random.choice(string.ascii_uppercase)
-
-    return letters1 + '-' + numbers + '-' + letters2
-
-
-def generate_random_color() -> str:
-    return random.choice(list(CSS4_COLORS.keys()))
-
 
 class Voiture:
     def __init__(self, x, y, v, nom=None, couleur=None, a=0) -> None:

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from matplotlib.animation import FuncAnimation
 
-from read_json import read_params, read_bornes
+from utils import read_params, read_bornes, genere_impaires
 from microtrafic import Voiture, Route
 
 
@@ -36,13 +36,6 @@ points = [(ax.plot(voiture.x, voiture.y, color=voiture.couleur, marker='.', mark
 etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
 # Création de la route 
 
-def genere_impaires(n: int) -> List[int]:
-    """ Pour 2 voies on veut [-1, -3] * road_width
-             3 -> [-1, -3, -5]
-             4 -> [-1, -3, -5, -7]
-             ... Les nombres impais <= 2n - 1
-    """
-    return list(range(n+n))[1::2]
 
 def genere_route(ax: plt.Axes, route: Route, nvoies: int, rwidth: float) -> List[LineCollection]:
     multiplicateurs = genere_impaires(nvoies)
