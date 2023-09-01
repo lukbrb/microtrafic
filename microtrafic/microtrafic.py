@@ -5,10 +5,13 @@ from typing import List
 
 from matplotlib.colors import CSS4_COLORS
 
-dt = 0.1
-TEMPS_SECUR = 1.
-NVOIES = 3
-sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
+from read_json import read_params
+
+params = read_params()
+# dt = 0.1
+# TEMPS_SECUR = 1.
+# NVOIES = 3
+# sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
 
 """"
 Conditions pour avancer:
@@ -68,16 +71,16 @@ class Voiture:
         self.nom = generate_random_immatriculation() if self.nom is None else self.nom
 
     def avance(self) -> None:
-        dy = 0.5 * self.a * dt**2 + self.v * dt
+        dy = 0.5 * self.a * params.DT**2 + self.v * params.DT
         self.y += dy
     
     def accelere(self, signe=1) -> None:
-        dv += (self.a * dt) * signe # 1 accélère, -1 décélère
+        dv += (self.a * params.DT) * signe # 1 accélère, -1 décélère
         self.v += dv
     
     def _change_voie(self, sens:str):
-        dx = sens_changement[sens]
-        if -NVOIES <= (self.x + dx) <= 0:
+        dx = params.sens_changement[sens]
+        if -params.NVOIES <= (self.x + dx) <= 0:
             self.x += dx
 
     def depassement(self):
@@ -123,13 +126,13 @@ class Route:
             
     def step(self) -> None:
         for voiture in self.voitures:
-            if self.distance_securite(voiture.x + sens_changement['droite'], voiture.y + voiture.v * dt, voiture) and voiture.x < 0:
+            if self.distance_securite(voiture.x + params.sens_changement['droite'], voiture.y + voiture.v * params.DT, voiture) and voiture.x < 0:
                 voiture.rabattement()
                 action = 'Rabattement'
-            elif self.distance_securite_avant(voiture, TEMPS_SECUR):
+            elif self.distance_securite_avant(voiture, params.TEMPS_SECUR):
                 voiture.avance()
                 action = 'Avance'
-            elif self.distance_securite(voiture.x + sens_changement['gauche'], voiture.y + voiture.v * dt, voiture) and (voiture.x - 1) > -NVOIES:
+            elif self.distance_securite(voiture.x + params.sens_changement['gauche'], voiture.y + voiture.v * params.DT, voiture) and (voiture.x - 1) > -params.NVOIES:
                 voiture.depassement()
                 action = 'Dépassement'
             else:
