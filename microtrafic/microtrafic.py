@@ -95,24 +95,24 @@ class Route:
                     return False
         return True
     
-    def distance_securite_avant(self, voiture, temps_secur):
-        distance_secur = voiture.v * temps_secur
-        for other in self.voitures:
-            if other.x != voiture.x:
-                return True
-            elif other.x < voiture.x:
-                return True
-            elif abs(other.x - voiture.x) > distance_secur:
-                return True
-            else:
-                return False
+    # def distance_securite_avant(self, voiture, temps_secur):
+    #     distance_secur = voiture.v * temps_secur
+    #     for other in self.voitures:
+    #         if other.x != voiture.x:
+    #             return True
+    #         elif other.x < voiture.x:
+    #             return True
+    #         elif abs(other.x - voiture.x) > distance_secur:
+    #             return True
+    #         else:
+    #             return False
             
     def step(self) -> None:
         for voiture in self.voitures:
             if self.distance_securite(voiture.x + params.sens_changement['droite'], voiture.y + voiture.v * params.DT, voiture) and voiture.x < 0:
                 voiture.rabattement()
                 action = 'Rabattement'
-            elif self.distance_securite_avant(voiture, params.TEMPS_SECUR):
+            elif self.distance_securite(voiture.x, voiture.y + voiture.v * params.DT, voiture):
                 voiture.avance()
                 action = 'Avance'
             elif self.distance_securite(voiture.x + params.sens_changement['gauche'], voiture.y + voiture.v * params.DT, voiture) and (voiture.x - 1) > -params.NVOIES:
