@@ -21,7 +21,7 @@ class Bornes:
     v: tuple
 
 
-def read_params(file_name: str = 'microtrafic/parameters.json'):
+def read_params(file_name: str = 'parameters.json'):
     with open(file_name, "r") as json_file:
         return Parameters(**json.load(json_file))
 
@@ -31,8 +31,3 @@ def read_bornes(parameters: Parameters) -> Bornes:
     bornes_y = (0, parameters.ROAD_LEN - 1)
     bornes_v = (parameters.VMIN, 1)
     return Bornes(x=bornes_x, y=bornes_y, v=bornes_v)
-
-
-# bornes_x = (-NVOIES + 1, 0)
-# bornes_y = (0, 99)
-# bornes_v = (0.7, 1)
