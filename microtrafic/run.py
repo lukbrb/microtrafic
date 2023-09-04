@@ -7,14 +7,6 @@ from matplotlib.animation import FuncAnimation
 from utils import read_params, read_bornes, genere_impaires
 from microtrafic import Voiture, Route
 
-
-# TODO: Mettre les paramètres généraux dans un fichier json ou autre
-# road_width = 0.5
-# VMAX = 5
-# NVOITURES = 40
-# bornes_x = (-NVOIES + 1, 0)
-# bornes_y = (0, 99)
-# bornes_v = (0.7, 1)
 params = read_params()
 bornes = read_bornes(params)
 
@@ -23,17 +15,14 @@ voitures = [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random
 route = Route(voitures, nvoies=params.NVOIES, distance=100)
 
 fig, ax = plt.subplots()
-ax.set_xlim(- params.NVOIES, 5)
+ax.set_xlim(-params.NVOIES, params.ROAD_WIDTH)
 ax.set_ylim(0, route.distance)
 #ax.set_axis_off()
 
 #ax.axis('off')
-
-
-couleurs = 'rbgkyw'
 # Initialisation des points
 points = [(ax.plot(voiture.x, voiture.y, color=voiture.couleur, marker='.', markersize=10))[0] for i, voiture in enumerate(voitures)]
-etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
+#etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
 # Création de la route 
 
 
@@ -55,9 +44,9 @@ def update(frame):
     for i in range(len(points)):
     # Mettre à jour les données des points dans les graphiques
         points[i].set_data(voitures[i].x, voitures[i].y % route.distance)
-        points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
-    etape[0].set_label(f'Étape = {route.pas}')
-    return points + etape
+        #points[i].set_label(f'{voitures[i].nom} (y = {voitures[i].y: .2f})')
+    #etape[0].set_label(f'Étape = {route.pas}')
+    return points
 
 # Durée totale de la simulation en secondes
 total_duration = 3
@@ -66,7 +55,7 @@ fps = 30
 total_frames = int(total_duration * fps)
 # Créer l'animation en appelant la fonction update à chaque image (frame)
 ani = FuncAnimation(fig,update, frames=range(total_frames), interval=1000/fps, blit=True)
-ax.legend()
+#ax.legend()
 
 plt.tight_layout()  # Ajuster la disposition des éléments de la figure
 plt.show()

@@ -4,10 +4,6 @@ from typing import List
 from utils import read_params, generate_random_color, generate_random_immatriculation
 
 params = read_params()
-# dt = 0.1
-# TEMPS_SECUR = 1.
-# NVOIES = 3
-# sens_changement = {'gauche': -1, 'droite': 1, 'devant': 1, 'derriere': -1}
 
 """"
 Conditions pour avancer:
@@ -91,36 +87,24 @@ class Route:
         for other in self.voitures:
             if x == other.x and voiture != other:  # Véhicules sur la même ligne, et pas lui-même
                 if abs(y - other.y % self.distance) < distance_secur:
-                    print(f"{voiture} trop proche de {other}")
                     return False
         return True
-    
-    # def distance_securite_avant(self, voiture, temps_secur):
-    #     distance_secur = voiture.v * temps_secur
-    #     for other in self.voitures:
-    #         if other.x != voiture.x:
-    #             return True
-    #         elif other.x < voiture.x:
-    #             return True
-    #         elif abs(other.x - voiture.x) > distance_secur:
-    #             return True
-    #         else:
-    #             return False
-            
+
     def step(self) -> None:
         for voiture in self.voitures:
             if self.distance_securite(voiture.x + params.sens_changement['droite'], voiture.y + voiture.v * params.DT, voiture) and voiture.x < 0:
                 voiture.rabattement()
-                action = 'Rabattement'
+                action = "S'est rabattu"
             elif self.distance_securite(voiture.x, voiture.y + voiture.v * params.DT, voiture):
                 voiture.avance()
-                action = 'Avance'
+                action = 'A avancé'
+
             elif self.distance_securite(voiture.x + params.sens_changement['gauche'], voiture.y + voiture.v * params.DT, voiture) and (voiture.x - 1) > -params.NVOIES:
                 voiture.depassement()
-                action = 'Dépassement'
+                action = 'A dépassé'
             else:
                 voiture.attente()
-                action = 'Attente'
+                action = 'A attendu'
 
             voiture.y %= self.distance
             logging.info(f"Étape : {self.pas} - {voiture.nom}- Position ({voiture.x:.2f}, {voiture.y:.2f}) - Action: {action}")
