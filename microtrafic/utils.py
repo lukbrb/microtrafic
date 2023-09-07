@@ -3,9 +3,8 @@ import random
 import string
 from typing import List
 from dataclasses import dataclass
-
-
 from matplotlib.colors import CSS4_COLORS
+from core import Voiture
 
 @dataclass
 class Parameters:
@@ -58,3 +57,15 @@ def generate_random_immatriculation() -> str:
 def generate_random_color() -> str:
     return random.choice(list(CSS4_COLORS.keys()))
 
+
+def generate_cars(nvoitures: int, bornes: Bornes, vmax: float) -> List[Voiture]:
+    """ Généère une liste de voitures en s'assurant qu'elles 
+        occupent toutes une position autorisée.
+    """
+    if not isinstance(bornes, Bornes):
+        raise TypeError(f"bornes est de type {type(bornes)}, mais doit être de type Bornes.")
+    
+    liste_basique = [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax) for _ in range(nvoitures)]
+
+    # Il faut maintenant s'assurer que toutes les distances de sécurité soient respectées pour toutes les voitures, et sinon, changer la voiture à un autre endroit valide.
+    # A priori, les insérer une par une pour procéder à une vérif semble le plus simple. 
