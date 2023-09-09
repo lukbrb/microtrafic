@@ -1,7 +1,9 @@
 import logging
+import random
 from typing import List
 
-from utils import read_params, generate_random_color, generate_random_immatriculation
+from datareader import read_params, Bornes
+from utils import generate_random_color, generate_random_immatriculation
 
 params = read_params()
 
@@ -112,3 +114,37 @@ class Route:
             voiture.y %= self.distance
             logging.info(
                 f"Étape : {self.pas} - {voiture.nom}- Position ({voiture.x:.2f}, {voiture.y:.2f}) - Action: {action}")
+
+def check_distance(voiture: Voiture, l_voitures: List[Voiture], temps_secur: float) -> bool:
+    distance_secur = voiture.v * temps_secur
+    for other in l_voitures:
+        for other in l_voitures:
+            if voiture.x == other.x and voiture != other:  # Véhicules sur la même ligne, et pas lui-même
+                if abs(voiture.y - other.y) < distance_secur:
+                    return False
+    return True
+
+
+def initialise_voitures(nvoitures: int, bornes: Bornes, vmax: float, temps_secur: float, max_essais: int = 50) -> List[Voiture]:
+    """ Généère une liste de voitures en s'assurant qu'elles 
+        occupent toutes une position autorisée.
+    """
+    if not isinstance(bornes, Bornes):
+        raise TypeError(f"bornes est de type {type(bornes)}, mais doit être de type Bornes.")
+    
+    # liste_basique = [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax) for _ in range(nvoitures)]
+    liste_voitures = []
+
+    for i in range(nvoitures):
+        can_be_added = False
+        essai = 0
+        while can_be_added is False and essai <= max_essais:
+            voiture = Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax)
+            can_be_added = check_distance(voiture, liste_voitures, temps_secur)  # if check_dist is True -> can_be_addded true, else can_be_added false
+            essai += 1
+        if can_be_added:    
+            liste_voitures.append(voiture)
+        else:
+            print(f"{voiture.nom} n'a pas pu être placée. Nombre max de voiture")
+        
+    return liste_voitures
