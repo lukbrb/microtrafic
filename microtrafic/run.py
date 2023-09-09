@@ -1,21 +1,21 @@
-import random
 from typing import List
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from matplotlib.animation import FuncAnimation
 
-from utils import read_params, read_bornes, genere_impaires, generate_cars
-from microtrafic.core import Voiture, Route
+from datareader import read_params, read_bornes
+from utils import genere_impaires
+from core import initialise_voitures, Route
 
 params = read_params()
 bornes = read_bornes(params)
 
-voitures = generate_cars(params.NVOITURES, bornes, params.VMAX, params.TEMPS_SECUR)
-
+voitures = initialise_voitures(params.NVOITURES, bornes, params.VMAX, params.TEMPS_SECUR)
+# voitures = initialise_voitures(params.NVOITURES, bornes, params.VMAX, params.TEMPS_SECUR, genre='facile')
 route = Route(voitures, nvoies=params.NVOIES, distance=100)
 
 fig, ax = plt.subplots()
-ax.set_xlim(-params.NVOIES, params.ROAD_WIDTH)
+ax.set_xlim(-params.NVOIES, 2 * params.ROAD_WIDTH)
 ax.set_ylim(0, route.distance)
 # ax.set_axis_off()
 
@@ -66,4 +66,4 @@ ani = FuncAnimation(fig, update, frames=total_frames, interval=1000 / fps, blit=
 
 plt.tight_layout()  # Ajuster la disposition des éléments de la figure
 plt.show()
-# ani.save('trafic.gif')
+# # ani.save('trafic.gif')
