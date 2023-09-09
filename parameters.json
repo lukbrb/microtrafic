@@ -4,7 +4,7 @@
     "ROAD_LEN": 100,
     "VMAX": 5,
     "VMIN": 0.7,
-    "NVOITURES": 15,
+    "NVOITURES": 40,
     "DT": 0.1,
     "TEMPS_SECUR": 1.0,
     "sens_changement": {"gauche": -1, "droite": 1, "devant": 1, "derriere": -1}
