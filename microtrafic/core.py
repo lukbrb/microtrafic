@@ -125,26 +125,32 @@ def check_distance(voiture: Voiture, l_voitures: List[Voiture], temps_secur: flo
     return True
 
 
-def initialise_voitures(nvoitures: int, bornes: Bornes, vmax: float, temps_secur: float, max_essais: int = 50) -> List[Voiture]:
+def initialise_voitures(nvoitures: int, bornes: Bornes, vmax: float, temps_secur: float, max_essais: int = 50, genre='normal') -> List[Voiture]:
     """ Généère une liste de voitures en s'assurant qu'elles 
         occupent toutes une position autorisée.
     """
     if not isinstance(bornes, Bornes):
         raise TypeError(f"bornes est de type {type(bornes)}, mais doit être de type Bornes.")
     
-    # liste_basique = [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax) for _ in range(nvoitures)]
-    liste_voitures = []
+    if genre == 'normal':
+        # liste_basique = [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax) for _ in range(nvoitures)]
+        liste_voitures = []
 
-    for i in range(nvoitures):
-        can_be_added = False
-        essai = 0
-        while can_be_added is False and essai <= max_essais:
-            voiture = Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax)
-            can_be_added = check_distance(voiture, liste_voitures, temps_secur)  # if check_dist is True -> can_be_addded true, else can_be_added false
-            essai += 1
-        if can_be_added:    
-            liste_voitures.append(voiture)
-        else:
-            print(f"{voiture.nom} n'a pas pu être placée. Nombre max de voiture")
-        
-    return liste_voitures
+        for i in range(nvoitures):
+            can_be_added = False
+            essai = 0
+            while can_be_added is False and essai <= max_essais:
+                voiture = Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax)
+                can_be_added = check_distance(voiture, liste_voitures, temps_secur)  # if check_dist is True -> can_be_addded true, else can_be_added false
+                essai += 1
+            if can_be_added:    
+                liste_voitures.append(voiture)
+            else:
+                print(f"{voiture.nom} n'a pas pu être placée. Nombre max de voiture")
+            
+        return liste_voitures
+    elif genre == 'facile':
+        return [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax) for _ in range(nvoitures)]
+    
+    else:
+        raise ValueError(f'Genre doit être normal ou facile, pas {genre}')
