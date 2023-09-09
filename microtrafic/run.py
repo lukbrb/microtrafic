@@ -4,14 +4,13 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from matplotlib.animation import FuncAnimation
 
-from utils import read_params, read_bornes, genere_impaires
-from microtrafic import Voiture, Route
+from utils import read_params, read_bornes, genere_impaires, generate_cars
+from microtrafic.core import Voiture, Route
 
 params = read_params()
 bornes = read_bornes(params)
 
-voitures = [Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * params.VMAX) for _
-            in range(params.NVOITURES)]
+voitures = generate_cars(params.NVOITURES, bornes, params.VMAX, params.TEMPS_SECUR)
 
 route = Route(voitures, nvoies=params.NVOIES, distance=100)
 

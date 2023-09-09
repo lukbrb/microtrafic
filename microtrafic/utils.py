@@ -4,7 +4,7 @@ import string
 from typing import List
 from dataclasses import dataclass
 from matplotlib.colors import CSS4_COLORS
-from core import Voiture
+from microtrafic.core import Voiture
 
 @dataclass
 class Parameters:
@@ -67,7 +67,7 @@ def generate_random_color() -> str:
     return random.choice(list(CSS4_COLORS.keys()))
 
 
-def generate_cars(nvoitures: int, bornes: Bornes, vmax: float, temps_secur: float) -> List[Voiture]:
+def generate_cars(nvoitures: int, bornes: Bornes, vmax: float, temps_secur: float, max_essais: int = 50) -> List[Voiture]:
     """ Généère une liste de voitures en s'assurant qu'elles 
         occupent toutes une position autorisée.
     """
@@ -78,10 +78,18 @@ def generate_cars(nvoitures: int, bornes: Bornes, vmax: float, temps_secur: floa
     liste_voitures = []
 
     for i in range(nvoitures):
-        can_be_added = True
-        voiture = Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax)
-        if check_distance(voiture, liste_voitures):
+        can_be_added = False
+        essai = 0
+        while can_be_added is False and essai <= max_essais:
+            voiture = Voiture(random.randint(*bornes.x), random.uniform(*bornes.y), random.uniform(*bornes.v) * vmax)
+            can_be_added = check_distance(voiture, liste_voitures)  # if check_dist is True -> can_be_addded true, else can_be_added false
+            essai += 1
+        if can_be_added:    
             liste_voitures.append(voiture)
+        else:
+            print(f"{voiture.nom} n'a pas pu être placée. Nombre max de voiture")
+        
+    return liste_voitures
 
 
     # Il faut maintenant s'assurer que toutes les distances de sécurité soient respectées pour toutes les voitures, et sinon, changer la voiture à un autre endroit valide.
