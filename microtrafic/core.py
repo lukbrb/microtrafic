@@ -89,7 +89,7 @@ class Route:
         distance_secur = voiture.v * temps_secur
         for other in self.voitures:
             if x == other.x and voiture != other:  # Véhicules sur la même ligne, et pas lui-même
-                if abs(y - other.y % self.distance) < distance_secur:
+                if abs(y % self.distance - other.y % self.distance) < distance_secur:
                     return False
         return True
 
