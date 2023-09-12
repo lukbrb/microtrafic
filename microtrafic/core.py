@@ -56,52 +56,52 @@ class Voiture:
             On considère d'abord les x, à droite le plus petit. 
             Puis si même x on regarde l'ordonnée.
         """
-        # if abs(self.x) < abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
-        #     return True
-        # elif self.x == other.x:
-        #     return self.y < other.y
-        # else:
-        #     return False
-        return self.y < other.y
+        if self.x < other.x:  # abs() puisque le plus à gauche le plus négatif x est
+            return True
+        elif self.x == other.x:
+            return self.y < other.y
+        else:
+            return False
+        # return self.y < other.y
     
     def __le__(self, other) -> bool:
         """ Si la position de la voiture actuelle <= à l'autre.
             On considère d'abord les x, à droite le plus petit. 
             Puis si même x on regarde l'ordonnée.
         """
-        # if abs(self.x) < abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
-        #     return True
-        # elif self.x == other.x:
-        #     return self.y <= other.y
-        # else:
-        #     return False
-        return self.y <= other.y
+        if self.x < other.x:  # abs() puisque le plus à gauche le plus négatif x est
+            return True
+        elif self.x == other.x:
+            return self.y <= other.y
+        else:
+            return False
+        # return self.y <= other.y
         
     def __gt__(self, other) -> bool:
         """ Si la position de la voiture actuelle >= à l'autre.
             On considère d'abord les x, à droite le plus petit. 
             Puis si même x on regarde l'ordonnée.
         """
-        # if abs(self.x) > abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
-        #     return True
-        # elif self.x == other.x:
-        #     return self.y > other.y
-        # else:
-        #     return False
-        return self.y > other.y
+        if self.x > other.x:  # abs() puisque le plus à gauche le plus négatif x est
+            return True
+        elif self.x == other.x:
+            return self.y > other.y
+        else:
+            return False
+        # return self.y > other.y
         
     def __ge__(self, other) -> bool:
         """ Si la position de la voiture actuelle >= à l'autre.
             On considère d'abord les x, à droite le plus petit. 
             Puis si même x on regarde l'ordonnée.
         """
-        # if abs(self.x) > abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
-        #     return True
-        # elif self.x == other.x:
-        #     return self.y >= other.y
-        # else:
-        #     return False
-        return self.y >= other.y
+        if self.x > other.x:  # abs() puisque le plus à gauche le plus négatif x est
+            return True
+        elif self.x == other.x:
+            return self.y >= other.y
+        else:
+            return False
+        # return self.y >= other.y
 
     def set_color(self) -> None:
         self.couleur = generate_random_color() if self.couleur is None else self.couleur
