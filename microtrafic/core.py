@@ -46,6 +46,63 @@ class Voiture:
     def __repr__(self) -> str:
         return f"{self.nom}(x={self.x:.2f}, y={self.y:.2f}, v={self.v:.2f})"
 
+    # def __eq__(self, other: object) -> bool:      
+    #     same_lane = self.x == other.x
+    #     same_y = self.y == other.x
+    #     return same_lane and same_y    
+
+    def __lt__(self, other) -> bool:
+        """ Si la position de la voiture actuelle < à l'autre.
+            On considère d'abord les x, à droite le plus petit. 
+            Puis si même x on regarde l'ordonnée.
+        """
+        # if abs(self.x) < abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
+        #     return True
+        # elif self.x == other.x:
+        #     return self.y < other.y
+        # else:
+        #     return False
+        return self.y < other.y
+    
+    def __le__(self, other) -> bool:
+        """ Si la position de la voiture actuelle <= à l'autre.
+            On considère d'abord les x, à droite le plus petit. 
+            Puis si même x on regarde l'ordonnée.
+        """
+        # if abs(self.x) < abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
+        #     return True
+        # elif self.x == other.x:
+        #     return self.y <= other.y
+        # else:
+        #     return False
+        return self.y <= other.y
+        
+    def __gt__(self, other) -> bool:
+        """ Si la position de la voiture actuelle >= à l'autre.
+            On considère d'abord les x, à droite le plus petit. 
+            Puis si même x on regarde l'ordonnée.
+        """
+        # if abs(self.x) > abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
+        #     return True
+        # elif self.x == other.x:
+        #     return self.y > other.y
+        # else:
+        #     return False
+        return self.y > other.y
+        
+    def __ge__(self, other) -> bool:
+        """ Si la position de la voiture actuelle >= à l'autre.
+            On considère d'abord les x, à droite le plus petit. 
+            Puis si même x on regarde l'ordonnée.
+        """
+        # if abs(self.x) > abs(other.x):  # abs() puisque le plus à gauche le plus négatif x est
+        #     return True
+        # elif self.x == other.x:
+        #     return self.y >= other.y
+        # else:
+        #     return False
+        return self.y >= other.y
+
     def set_color(self) -> None:
         self.couleur = generate_random_color() if self.couleur is None else self.couleur
 
@@ -94,6 +151,7 @@ class Route:
         return True
 
     def step(self) -> None:
+        self.voitures.sort()
         for voiture in self.voitures:
             if self.distance_securite(voiture.x + params.sens_changement['droite'], voiture.y + voiture.v * params.DT,
                                       voiture) and voiture.x < 0:
@@ -114,6 +172,7 @@ class Route:
             voiture.y %= self.distance
             logging.info(
                 f"Étape : {self.pas} - {voiture.nom}- Position ({voiture.x:.2f}, {voiture.y:.2f}) - Action: {action}")
+
 
 def check_distance(voiture: Voiture, l_voitures: List[Voiture], temps_secur: float) -> bool:
     distance_secur = voiture.v * temps_secur
