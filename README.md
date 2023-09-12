@@ -11,3 +11,5 @@ Créer des paramètres de flux pour s'assurer également qu'il y a assez de rout
 
 **Note du 11/09/2023:**
 Essayer de prioritiser les voitures de la lignes de droite. Donc implémenter dans voiture une méthode spéciale pour comparer voit1 < voit2 selon d'abord x puis y.
+
+Essai i infructueux pour voit1 < voit2 selon d'abord x puis y, mais efficace pour comparaison selon y uniquement. Néanmoins les voitures semblent faire des sauts. Voir si uniquement à cause de matplotlib qui distribueles couleurs différement.
