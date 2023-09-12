@@ -21,8 +21,7 @@ ax.set_ylim(0, route.distance)
 
 # ax.axis('off')
 # Initialisation des points
-points = [(ax.plot(voiture.x, voiture.y, color=voiture.couleur, marker='.', markersize=10))[0] for i, voiture in
-          enumerate(voitures)]
+points = [(ax.plot(voiture.x, voiture.y, color=voiture.couleur, marker='.', markersize=10))[0] for voiture in voitures]
 
 
 # etape = [ax.plot(0, 0, '.k', label=f'Étape = {route.pas}')[0]]
