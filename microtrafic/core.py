@@ -151,7 +151,7 @@ class Route:
         return True
 
     def step(self) -> None:
-        self.voitures.sort()
+        self.voitures.sort(reverse=True)
         for voiture in self.voitures:
             if self.distance_securite(voiture.x + params.sens_changement['droite'], voiture.y + voiture.v * params.DT,
                                       voiture) and voiture.x < 0:
